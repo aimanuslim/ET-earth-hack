@@ -140,11 +140,17 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='my-dropdown',
             options=[
-                {'label': 'Tesla', 'value': 'TSLA'},
-                {'label': 'Apple', 'value': 'AAPL'},
-                {'label': 'Coke', 'value': 'COKE'}
+                {'label': 'Cheal-A10', 'value': '../data/prep/Cheal-A10_Clean.csv'},
+                {'label': 'Cheal-A11', 'value': '../data/prep/Cheal-A11_Clean.csv'},
+                {'label': 'Cheal-A12', 'value': '../data/prep/Cheal-A12_Clean.csv'}
+                {'label': 'Cheal-B8', 'value': '../data/prep/Cheal-B8_Clean.csv'}
+                {'label': 'Cheal-C3', 'value': '../data/prep/Cheal-C3_Clean.csv'}
+                {'label': 'Cheal-C4', 'value': '../data/prep/Cheal-C4_Clean.csv'}
+                {'label': 'Cheal-G1', 'value': '../data/prep/Cheal-G1_Clean.csv'}
+                {'label': 'Cheal-G2', 'value': '../data/prep/Cheal-G2_Clean.csv'}
+                {'label': 'Cheal-G3', 'value': '../data/prep/Cheal-G3_Clean.csv'}
             ],
-        value='TSLA'
+        value='../data/prep/Cheal-B8_Clean.csv'
         ),
     ]),
     html.Div([
