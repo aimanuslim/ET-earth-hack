@@ -11,15 +11,15 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
-input_col_labels = ['General', 'Resistivity', 'Density', 'Actual', 'Predicted', 'Error']
+input_col_labels = ['General', 'Resistivity', 'Density', 'Measured DTC', 'Predicted DTC', 'Error']
 
 input_col_curves = [
     ['GR', 'BS', 'CALI', 'SP'],
     ['RESS', 'RESM', 'RESD'],
     ['DENS', 'NEUT', 'PEF'],
-    ['DTC_act'],
-    ['DTC_pred'],
-    ['Error']
+    # ['DTC_act'],
+    # ['DTC_pred'],
+    # ['Error']
 ]
 
 
@@ -59,7 +59,16 @@ def get_curve(xdata, ydata, dataname):
         hoverinfo='x'
     )
 
-data = load_csv()
+def dictdata(filepath):
+    curvedict = {}
+    df = pd.read_csv(filepath).replace('-9999',np.NaN).iloc[1:]
+    for curve in list(df):
+        if curve != 'DEPT':
+            curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
+    return curvedict
+
+data = dictdata('../data/prep/Cheal-B8_Clean.csv')
+# data = load_csv()
 # output_data = load_dtc()
 
 # fig_out = tools.make_subplots(rows=1, cols=len(output_col_labels),
@@ -82,7 +91,11 @@ for sbp in input_col_curves:
 #         fig_out.add_trace(get_curve(output_data[label][0], output_data[label][1], label), 1, col_idx)
 #     col_idx += 1
 
-
+fig['layout']['xaxis2'].update(
+    # hoverformat = '.2f',
+    side='top',
+    type='log',
+)
 
 fig['layout'].update(
     xaxis=dict(
@@ -96,10 +109,11 @@ fig['layout'].update(
         spikesnap='cursor',
         spikethickness=1,
         autorange='reversed',
-        zeroline=False
+        zeroline=False,
+        tickmode='linear',
         ),
     hovermode= 'closest',
-    legend=dict(orientation="h", y=1.05)
+    # legend=dict(orientation="h", y=1.05)
 
 )
 
@@ -121,10 +135,22 @@ fig['layout'].update(
 # )
 
 app.layout = html.Div([
+    html.H1('7logprod'),
+    html.Div([
+        dcc.Dropdown(
+            id='my-dropdown',
+            options=[
+                {'label': 'Tesla', 'value': 'TSLA'},
+                {'label': 'Apple', 'value': 'AAPL'},
+                {'label': 'Coke', 'value': 'COKE'}
+            ],
+        value='TSLA'
+        ),
+    ]),
     html.Div([
         dcc.Graph(
             figure=fig,
-            style={'height': 1900},
+            style={'height': 99999},
         ),
         # dcc.Graph(
         #     figure=fig_out,
