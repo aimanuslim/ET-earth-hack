@@ -13,12 +13,13 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 
-input_col_labels = ['General', 'Resistivity', 'Density', 'Measured DTC', 'Predicted DTC', 'Error']
+input_col_labels = ['General', 'Resistivity', 'Density', 'DTC Comparison']
 
 input_col_curves = [
     ['GR', 'BS', 'CALI'],
     ['RESS', 'RESM', 'RESD'],
     ['DENS', 'NEUT', 'PEF'],
+    ['Pred_DTC', 'DTC']
     # ['DTC_act'],
     # ['DTC_pred'],
     # ['Error']
@@ -58,7 +59,7 @@ def get_curve(xdata, ydata, dataname, tn):
         y=ydata,
         name=dataname,
         mode="lines",
-        hoverinfo='x',
+        hoverinfo='x+name',
         xaxis='x' + str(tn)
     )
 
@@ -71,6 +72,12 @@ def dictdata(filepath):
         if curve != 'DEPT':
             curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
     return curvedict
+
+def readres(filepath):
+    df = pd.read_csv(filepath).replace('-9999',np.NaN).iloc[1:]
+    pred_data  = (df['Pred_DTC'].tolist(),df['DEPT'].tolist())
+    return pred_data
+
 
 # def clean():
 #     curvedict = {}
@@ -194,35 +201,51 @@ fig = tools.make_subplots(rows=1, cols=len(input_col_labels),
 app.layout = html.Div([
     html.H1('7logprod'),
     html.Div([
-        dcc.Dropdown(
-            id='well-dropdown',
-            options=[
-                {'label': 'Cheal-A10', 'value': 'A10'},
-                {'label': 'Cheal-A11', 'value': 'A11'},
-                {'label': 'Cheal-A12', 'value': 'A12'},
-                {'label': 'Cheal-B8', 'value': 'B8'},
-                {'label': 'Cheal-C3', 'value': 'C3'},
-                {'label': 'Cheal-C4', 'value': 'C4'},
-                {'label': 'Cheal-G1', 'value': 'G1'},
-                {'label': 'Cheal-G2', 'value': 'G2'},
-                {'label': 'Cheal-G3', 'value': 'G3'}
-            ],
+        html.Div([
+            dcc.Dropdown(
+                id='well-dropdown',
+                options=[
+                    {'label': 'Cheal-A10', 'value': 'A10'},
+                    {'label': 'Cheal-A11', 'value': 'A11'},
+                    {'label': 'Cheal-A12', 'value': 'A12'},
+                    {'label': 'Cheal-B8', 'value': 'B8'},
+                    {'label': 'Cheal-C3', 'value': 'C3'},
+                    {'label': 'Cheal-C4', 'value': 'C4'},
+                    {'label': 'Cheal-G1', 'value': 'G1'},
+                    {'label': 'Cheal-G2', 'value': 'G2'},
+                    {'label': 'Cheal-G3', 'value': 'G3'}
+                ],
+            value='B8'
+            ),
+
+        ],
+        style={'width':'49%', 'display':'inline-block'}
+        ),
+        html.Div([
+            dcc.Dropdown(
+                id='algo-dropdown',
+                options=[
+                    {'label': 'Gradient Boosting', 'value': 'Gradient Boosting'},
+                    {'label': 'Linear regression', 'value': 'Linear regression'},
+                    {'label': 'Random forest', 'value': 'Random forrest'},
+                ],
+            value='Gradient Boosting'
+            ),
+
+        ],
+        style={'width':'49%', 'display':'inline-block'}
         ),
     ]),
     html.Div([
-       html.H3(id='xval-score',
-               style={'width': '49%', 'display': 'inline-block', 'text-align': 'center'},
-               children="Cross validation score: {:2f}".format(np.random.randint(0,565)),
-               ),
         html.H3(id='pred-score',
-                style={'width': '49%', 'display': 'inline-block', 'text-align': 'center'},
+                style={'text-align': 'center'},
                 children="Well score: {:2f}".format(np.random.randint(0,565)),
                 ),
     ]),
     html.Div([
         dcc.Graph(
             figure=fig,
-            style={'height': 99999},
+            style={'height': 50000},
             id='well-plot',
         ),
         # dcc.Graph(
@@ -232,20 +255,31 @@ app.layout = html.Div([
     ])
 ])
 
-@app.callback(dash.dependencies.Output('well-plot', 'figure'),
-            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
-def plot(val):
 
-    path = '../clean/Cheal-'+val+'_Clean.csv'
+
+@app.callback(dash.dependencies.Output('well-plot', 'figure'),
+            [
+            dash.dependencies.Input(component_id='well-dropdown',  component_property='value'),
+            dash.dependencies.Input(component_id='algo-dropdown',  component_property='value')
+            ])
+def plot(wellname, algoname):
+    path = '../clean/Cheal-'+wellname+'_Clean.csv'
     data = dictdata(path)
+    respath = '../Results/Cheal-'+wellname+'/'+algoname+'.csv'
+    pred_data = readres(respath)
     col_idx = 1
 
     trace_num = 1
     for sbp in input_col_curves:
         for label in sbp:
-            fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
+            if label == 'Pred_DTC':
+                fig.add_trace(get_curve(pred_data[0], pred_data[1], label, trace_num), 1, col_idx)
+            else:
+                fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
             trace_num += 1
         col_idx += 1
+
+
 
     # col_idx = 1
     # for sbp in output_col_curves:
@@ -259,15 +293,9 @@ def plot(val):
 
     )
 
-    fig['layout']['xaxis4'].update(
-        overlaying='x1',
-        showgrid=False,
-        title='second curve'
-    )
 
     fig['layout'].update(
         xaxis=dict(
-            title='x1',
             hoverformat = '.2f',
             zeroline=False
             ),
@@ -291,15 +319,19 @@ def plot(val):
         # legend=dict(orientation="h", y=1.05)
     )
 
-@app.callback(dash.dependencies.Output(component_id='xval-score', component_property='children'),
-            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
-def get_xval_score(wellname):
-    return "Cross validation score: {:2f}".format(np.random.randint(0,565))
+
 
 @app.callback(dash.dependencies.Output(component_id='pred-score',  component_property='children'),
-            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
-def get_well_score(wellname):
-    return "Well validation score: {:2f}".format(np.random.randint(0,565))
+            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value'),
+            dash.dependencies.Input(component_id='algo-dropdown',  component_property='value')
+            ]
+            )
+def get_well_score(wellname,algoname):
+    respath = '../Results/Cheal-'+wellname+'/'+algoname+'_score.csv'
+    df = pd.read_csv(respath)
+    error = df['ERROR'][0]
+    print(error)
+    return "R² score: {:2f}".format(error)
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0')
+    app.run_server(debug=True)
