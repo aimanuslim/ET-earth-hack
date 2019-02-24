@@ -88,7 +88,22 @@ def clean():
             curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
     return curvedict
 
-data = clean()
+def newdict():
+    newcurvedict = {}
+    oripath = "../data/clean"
+    for root, dirs, files in os.walk(oripath):
+        for file in files:
+            if file.endswith(".csv"):
+                laspath = os.path.join(root, file)
+                curvedict = {}
+                df = pd.read_csv(laspath).replace('-9999',np.NaN).iloc[1:]
+                name = df['wellName'][1]
+                for curve in list(df):
+                    if curve != 'DEPT':
+                        curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
+                newcurvedict[name] = (curvedict[curve])
+    return newcurvedict
+# data = clean()
 # data = dictdata('../data/prep/Cheal-B8_Clean.csv')
 # data = load_csv()
 # output_data = load_dtc()
