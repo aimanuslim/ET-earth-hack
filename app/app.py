@@ -51,14 +51,17 @@ def load_csv():
 #             )
 #     return data
 
-def get_curve(xdata, ydata, dataname):
+def get_curve(xdata, ydata, dataname, tn):
     return go.Scatter(
         x=xdata,
         y=ydata,
         name=dataname,
         mode="lines",
-        hoverinfo='x'
+        hoverinfo='x',
+        xaxis='x' + str(tn)
     )
+
+
 
 def dictdata(filepath):
     curvedict = {}
@@ -99,9 +102,12 @@ fig = tools.make_subplots(rows=1, cols=len(input_col_labels),
                         shared_yaxes=True
                           )
 col_idx = 1
+
+trace_num = 1
 for sbp in input_col_curves:
     for label in sbp:
-        fig.add_trace(get_curve(data[label][0], data[label][1], label), 1, col_idx)
+        fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
+        trace_num += 1
     col_idx += 1
 
 # col_idx = 1
@@ -111,15 +117,28 @@ for sbp in input_col_curves:
 #     col_idx += 1
 
 fig['layout']['xaxis2'].update(
-    # hoverformat = '.2f',
-    side='top',
     type='log',
+    # title='x2dgdsf',
+
+)
+
+fig['layout']['xaxis4'].update(
+    overlaying='x1',
+    showgrid=False,
+    title='second curve'
 )
 
 fig['layout'].update(
     xaxis=dict(
+        title='x1',
         hoverformat = '.2f',
+        zeroline=False
         ),
+    # xaxis2=dict(
+    #         title= 'xaxis2 title',
+    #         overlaying='x',
+    #         side='top'
+    # ),
     yaxis=dict(
         hoverformat = '.2f',
         showspikes=True,
@@ -133,7 +152,6 @@ fig['layout'].update(
         ),
     hovermode= 'closest',
     # legend=dict(orientation="h", y=1.05)
-
 )
 
 # fig_out['layout'].update(
@@ -153,11 +171,13 @@ fig['layout'].update(
 #     hovermode= 'closest',
 # )
 
+
+
 app.layout = html.Div([
     html.H1('7logprod'),
     html.Div([
         dcc.Dropdown(
-            id='my-dropdown',
+            id='well-dropdown',
             options=[
                 {'label': 'Cheal-A10', 'value': 'Cheal-A10'},
                 {'label': 'Cheal-A11', 'value': 'Cheal-A11'},
@@ -173,6 +193,16 @@ app.layout = html.Div([
         ),
     ]),
     html.Div([
+       html.H3(id='xval-score',
+               style={'width': '49%', 'display': 'inline-block', 'text-align': 'center'},
+               children="Cross validation score: {:2f}".format(np.random.randint(0,565)),
+               ),
+        html.H3(id='pred-score',
+                style={'width': '49%', 'display': 'inline-block', 'text-align': 'center'},
+                children="Well score: {:2f}".format(np.random.randint(0,565)),
+                ),
+    ]),
+    html.Div([
         dcc.Graph(
             figure=fig,
             style={'height': 99999},
@@ -184,8 +214,15 @@ app.layout = html.Div([
     ])
 ])
 
-@app.callback(Output('my-graph', 'figure'),
-              [Input('my-dropdown', 'value')])
+@app.callback(dash.dependencies.Output(component_id='xval-score', component_property='children'),
+            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
+def get_xval_score(wellname):
+    return "Cross validation score: {:2f}".format(np.random.randint(0,565))
+
+@app.callback(dash.dependencies.Output(component_id='pred-score',  component_property='children'),
+            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
+def get_well_score(wellname):
+    return "Well validation score: {:2f}".format(np.random.randint(0,565))
 
 if __name__ == '__main__':
     app.run_server(debug=True)
