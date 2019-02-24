@@ -157,7 +157,8 @@ fig['layout'].update(
 app.layout = html.Div([
     html.H1('7logprod'),
     html.Div([
-        dcc.Dropdown(
+        html.Div([
+            dcc.Dropdown(
             id='well-dropdown',
             options=[
                 {'label': 'Cheal-A10', 'value': '../data/prep/Cheal-A10_Clean.csv'},
@@ -170,7 +171,24 @@ app.layout = html.Div([
                 {'label': 'Cheal-G2', 'value': '../data/prep/Cheal-G2_Clean.csv'},
                 {'label': 'Cheal-G3', 'value': '../data/prep/Cheal-G3_Clean.csv'}
             ],
-        value='../data/prep/Cheal-B8_Clean.csv'
+            value='../data/prep/Cheal-B8_Clean.csv',
+        ),
+        ],
+        style={'width': '49%', 'display': 'inline-block'}
+        ),
+
+        html.Div([
+            dcc.Dropdown(
+                id='algo-dropdown',
+                options=[
+                    {'label': 'Gradient Boosting Regressor', 'value': '../data/{}/GBRscores.txt'},
+                    {'label': 'Random Forest Regressor', 'value': ''},
+                    {'label': 'Algo3', 'value': 'asd'},
+                ],
+                value='',
+            )
+        ],
+        style={'width': '49%', 'display': 'inline-block'}
         ),
     ]),
     html.Div([
