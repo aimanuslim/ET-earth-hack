@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 from plotly import tools
 import numpy as np
 import pandas as pd
+import os
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -71,38 +72,40 @@ def dictdata(filepath):
             curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
     return curvedict
 
-def clean():
-    curvedict = {}
-    df1 = pd.read_csv('../clean/Cheal-A10_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df2 = pd.read_csv('../clean/Cheal-A11_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df3 = pd.read_csv('../clean/Cheal-A12_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df4 = pd.read_csv('../clean/Cheal-B8_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df5 = pd.read_csv('../clean/Cheal-C3_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df6 = pd.read_csv('../clean/Cheal-C4_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df7 = pd.read_csv('../clean/Cheal-G1_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df8 = pd.read_csv('../clean/Cheal-G2_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df9 = pd.read_csv('../clean/Cheal-G3_Clean.csv').replace('-9999',np.NaN).iloc[1:]
-    df = pd.concat([df1,df2,df3,df4,df5,df6,df7,df8,df9])
-    for curve in list(df):
-        if curve != 'DEPT':
-            curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
-    return curvedict
+# def clean():
+#     curvedict = {}
+#     df1 = pd.read_csv('../clean/Cheal-A10_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df2 = pd.read_csv('../clean/Cheal-A11_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df3 = pd.read_csv('../clean/Cheal-A12_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df4 = pd.read_csv('../clean/Cheal-B8_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df5 = pd.read_csv('../clean/Cheal-C3_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df6 = pd.read_csv('../clean/Cheal-C4_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df7 = pd.read_csv('../clean/Cheal-G1_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df8 = pd.read_csv('../clean/Cheal-G2_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df9 = pd.read_csv('../clean/Cheal-G3_Clean.csv').replace('-9999',np.NaN).iloc[1:]
+#     df = pd.concat([df1,df2,df3,df4,df5,df6,df7,df8,df9])
+#     for curve in list(df):
+#         if curve != 'DEPT':
+#             curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
+#     return curvedict
 
-def newdict():
-    newcurvedict = {}
-    oripath = "../data/clean"
-    for root, dirs, files in os.walk(oripath):
-        for file in files:
-            if file.endswith(".csv"):
-                laspath = os.path.join(root, file)
-                curvedict = {}
-                df = pd.read_csv(laspath).replace('-9999',np.NaN).iloc[1:]
-                name = df['wellName'][1]
-                for curve in list(df):
-                    if curve != 'DEPT':
-                        curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
-                newcurvedict[name] = (curvedict[curve])
-    return newcurvedict
+# def newdict():
+#     newcurvedict = {}
+#     oripath = "../data/clean"
+#     for root, dirs, files in os.walk(oripath):
+#         for file in files:
+#             if file.endswith(".csv"):
+#                 laspath = os.path.join(root, file)
+#                 curvedict = {}
+#                 df = pd.read_csv(laspath).replace('-9999',np.NaN).iloc[1:]
+#                 name = df['wellName'][1]
+#                 for curve in list(df):
+#                     if curve != 'DEPT':
+#                         curvedict[curve] = (df[curve].tolist(),df['DEPT'].tolist())
+#                 newcurvedict[name] = curvedict[curve]
+#     return newcurvedict
+
+# data = newdict()
 # data = clean()
 # data = dictdata('../data/prep/Cheal-B8_Clean.csv')
 # data = load_csv()
@@ -116,14 +119,14 @@ fig = tools.make_subplots(rows=1, cols=len(input_col_labels),
                         subplot_titles=tuple(input_col_labels),
                         shared_yaxes=True
                           )
-col_idx = 1
-
-trace_num = 1
-for sbp in input_col_curves:
-    for label in sbp:
-        fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
-        trace_num += 1
-    col_idx += 1
+# col_idx = 1
+#
+# trace_num = 1
+# for sbp in input_col_curves:
+#     for label in sbp:
+#         fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
+#         trace_num += 1
+#     col_idx += 1
 
 # col_idx = 1
 # for sbp in output_col_curves:
@@ -131,43 +134,43 @@ for sbp in input_col_curves:
 #         fig_out.add_trace(get_curve(output_data[label][0], output_data[label][1], label), 1, col_idx)
 #     col_idx += 1
 
-fig['layout']['xaxis2'].update(
-    type='log',
-    # title='x2dgdsf',
+# fig['layout']['xaxis2'].update(
+#     type='log',
+#     # title='x2dgdsf',
+#
+# )
 
-)
+# fig['layout']['xaxis4'].update(
+#     overlaying='x1',
+#     showgrid=False,
+#     title='second curve'
+# )
 
-fig['layout']['xaxis4'].update(
-    overlaying='x1',
-    showgrid=False,
-    title='second curve'
-)
-
-fig['layout'].update(
-    xaxis=dict(
-        title='x1',
-        hoverformat = '.2f',
-        zeroline=False
-        ),
-    # xaxis2=dict(
-    #         title= 'xaxis2 title',
-    #         overlaying='x',
-    #         side='top'
-    # ),
-    yaxis=dict(
-        hoverformat = '.2f',
-        showspikes=True,
-        spikedash='solid',
-        spikemode='across',
-        spikesnap='cursor',
-        spikethickness=1,
-        autorange='reversed',
-        zeroline=False,
-        tickmode='linear',
-        ),
-    hovermode= 'closest',
-    # legend=dict(orientation="h", y=1.05)
-)
+# fig['layout'].update(
+#     xaxis=dict(
+#         title='x1',
+#         hoverformat = '.2f',
+#         zeroline=False
+#         ),
+#     # xaxis2=dict(
+#     #         title= 'xaxis2 title',
+#     #         overlaying='x',
+#     #         side='top'
+#     # ),
+#     yaxis=dict(
+#         hoverformat = '.2f',
+#         showspikes=True,
+#         spikedash='solid',
+#         spikemode='across',
+#         spikesnap='cursor',
+#         spikethickness=1,
+#         autorange='reversed',
+#         zeroline=False,
+#         tickmode='linear',
+#         ),
+#     hovermode= 'closest',
+#     # legend=dict(orientation="h", y=1.05)
+# )
 
 # fig_out['layout'].update(
 #     xaxis=dict(
@@ -194,17 +197,16 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='well-dropdown',
             options=[
-                {'label': 'Cheal-A10', 'value': 'Cheal-A10'},
-                {'label': 'Cheal-A11', 'value': 'Cheal-A11'},
-                {'label': 'Cheal-A12', 'value': 'Cheal-A12'},
-                {'label': 'Cheal-B8', 'value': 'Cheal-B8'},
-                {'label': 'Cheal-C3', 'value': 'Cheal-C3'},
-                {'label': 'Cheal-C4', 'value': 'Cheal-C4'},
-                {'label': 'Cheal-G1', 'value': 'Cheal-G1'},
-                {'label': 'Cheal-G2', 'value': 'Cheal-G2'},
-                {'label': 'Cheal-G3', 'value': 'Cheal-G3'}
+                {'label': 'Cheal-A10', 'value': 'A10'},
+                {'label': 'Cheal-A11', 'value': 'A11'},
+                {'label': 'Cheal-A12', 'value': 'A12'},
+                {'label': 'Cheal-B8', 'value': 'B8'},
+                {'label': 'Cheal-C3', 'value': 'C3'},
+                {'label': 'Cheal-C4', 'value': 'C4'},
+                {'label': 'Cheal-G1', 'value': 'G1'},
+                {'label': 'Cheal-G2', 'value': 'G2'},
+                {'label': 'Cheal-G3', 'value': 'G3'}
             ],
-        value='Cheal-A10'
         ),
     ]),
     html.Div([
@@ -221,6 +223,7 @@ app.layout = html.Div([
         dcc.Graph(
             figure=fig,
             style={'height': 99999},
+            id='well-plot',
         ),
         # dcc.Graph(
         #     figure=fig_out,
@@ -228,6 +231,65 @@ app.layout = html.Div([
         # )
     ])
 ])
+
+@app.callback(dash.dependencies.Output('well-plot', 'figure'),
+            [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
+def plot(val):
+
+    path = '../clean/Cheal-'+val+'_Clean.csv'
+    data = dictdata(path)
+    col_idx = 1
+
+    trace_num = 1
+    for sbp in input_col_curves:
+        for label in sbp:
+            fig.add_trace(get_curve(data[label][0], data[label][1], label, trace_num), 1, col_idx)
+            trace_num += 1
+        col_idx += 1
+
+    # col_idx = 1
+    # for sbp in output_col_curves:
+    #     for label in sbp:
+    #         fig_out.add_trace(get_curve(output_data[label][0], output_data[label][1], label), 1, col_idx)
+    #     col_idx += 1
+
+    fig['layout']['xaxis2'].update(
+        type='log',
+        # title='x2dgdsf',
+
+    )
+
+    fig['layout']['xaxis4'].update(
+        overlaying='x1',
+        showgrid=False,
+        title='second curve'
+    )
+
+    fig['layout'].update(
+        xaxis=dict(
+            title='x1',
+            hoverformat = '.2f',
+            zeroline=False
+            ),
+        # xaxis2=dict(
+        #         title= 'xaxis2 title',
+        #         overlaying='x',
+        #         side='top'
+        # ),
+        yaxis=dict(
+            hoverformat = '.2f',
+            showspikes=True,
+            spikedash='solid',
+            spikemode='across',
+            spikesnap='cursor',
+            spikethickness=1,
+            autorange='reversed',
+            zeroline=False,
+            tickmode='linear',
+            ),
+        hovermode= 'closest',
+        # legend=dict(orientation="h", y=1.05)
+    )
 
 @app.callback(dash.dependencies.Output(component_id='xval-score', component_property='children'),
             [dash.dependencies.Input(component_id='well-dropdown',  component_property='value')])
