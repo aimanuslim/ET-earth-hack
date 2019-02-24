@@ -224,4 +224,4 @@ def get_well_score(wellname):
     return "Well validation score: {:2f}".format(np.random.randint(0,565))
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0')
