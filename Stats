@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Feb 25 12:05:59 2019
+
+@author: nooradilahbtrashid
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+#Data Pre-processing
+#Data Cleaning-MV Detection
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline  
+
+#read the dataset
+os.chdir(r"/Users/nooradilahbtrashid/Downloads/Clean files/Finally_Clean") 
+df=pd.read_csv("Cheal-A10_Clean.csv")
+df.info()
+
+#Statistics summary
+summary=df.describe()
+summary.to_csv('B8.csv')
+
+#Missing value 
+newdata=df.replace(['-9999'], [np.nan])
+newdata.info()
+newdata.to_csv('MV.csv')
+
+#Finding Missing value
+df.isnull().sum()
+MVP=df.isnull().sum()/len(df)*100
+
+#Selecting column
+df1=df[['DTC']]
+
+#Plotting
+import seaborn as sns 
+sns.regplot(x=df["DEPT"], y=df["DTC"])
+sns.despine()
+
+#Correlation to DTC
+corr=df.corr()
+corr.to_csv('corrB8.csv')
+
+#Choosing corr>0.5
+df.loc[:, df.corr()['DTC'] > -0.5]
+
+#Heatmap corr without value
+top_corr_features = corr.index
+plt.figure()
+map=sns.heatmap(df[top_corr_features].corr())ue
+
+#Heatmap corr with val
+sns.heatmap(corr, annot=True, cmap="YlGnBu", annot_kws={"size": 7})
+sns.plt.show()
+sns.heatmap(corr)
+
+ 
+
+
+
