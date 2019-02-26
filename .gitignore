@@ -1,1 +1,23 @@
 *.pyc
+
+Results/Cheal-A10/xgbr_score.csv
+
+*.csv
+
+*.csv
+
+Results/Cheal-A11/Random forrest.csv
+
+*.csv
+
+*.csv
+
+*.ipynb
+
+.DS_Store
+
+Cross Vall.ipynb
+
+Results/Cheal-A11/Random forrest_score.csv
+
+Results/Cheal-A10/Random forrest.csv
