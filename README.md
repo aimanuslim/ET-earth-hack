@@ -1,6 +1,8 @@
 # ET-earth-hack
 This is the repository for one of top three winning solutions at EAGE Earth-Hack Hackathon. The team was representing Exploration Technology department of PETRONAS Research Sdn Bhd.
 
+This program intends to predict sonic (DTC) in a well, based on other log values in that well.
+
 ## Interface
 ![](Interface.png)
 
